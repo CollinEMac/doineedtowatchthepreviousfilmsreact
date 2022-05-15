@@ -5,24 +5,20 @@ const axios = require('axios');
 
 function App() {
   let [searchText, setSearchText] = useState("");
+  let [filmsList, setFilmsList] = useState([]);
+  const rootPosterUrl = 'https://www.themoviedb.org/t/p/w94_and_h141_bestv2/';
 
   let handleInputChanges = (event) => {
     setSearchText(event.currentTarget.value);
   };
 
-  function logMovies(movie) {
-    console.log(movie.original_title);
-  }
-
   function submitSearch () {
     const url = 'https://api.themoviedb.org/3/search/movie?api_key=***REMOVED***&query=' + searchText;
     
-    console.log(url);
-
     axios
       .get(url)
       .then(res => {
-          res.data.results.forEach(logMovies)
+        setFilmsList(res.data.results);
       })
       .catch(error => {
           console.error(error);
@@ -39,6 +35,15 @@ function App() {
           onChange={handleInputChanges}
         ></input>
         <button onClick={submitSearch}>Submit</button>
+      </div>
+      <div>
+        {filmsList.map(film =>
+          <div>
+            <img src={rootPosterUrl + film.poster_path}></img>
+            <p>{film.title}</p>
+            <p>{film.overview}</p>
+          </div>
+        )}
       </div>
       <div>
         Powered by
