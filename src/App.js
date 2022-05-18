@@ -6,6 +6,7 @@ const axios = require('axios');
 function App() {
   let [searchText, setSearchText] = useState("");
   let [filmsList, setFilmsList] = useState([]);
+  let [relatedFilms, setRelatedFilms] = useState("");
 
   const apiUrl = 'http://127.0.0.1:8081'
   const rootPosterUrl = 'https://www.themoviedb.org/t/p/w94_and_h141_bestv2/';
@@ -33,12 +34,15 @@ function App() {
       .then(res => {
         console.log("it's working");
         console.log(res);
+        setRelatedFilms(res.data);
+        // return res.data;
       })
       .catch(error => {
         console.log('error');
         console.error(error);
       })
   }
+
 
   return (
     <div className="App">
@@ -63,12 +67,12 @@ function App() {
                 <p >{film.title}</p>
               </td>
               <td>
-                <p >Required Films</p>
+                <p onClick={() => getRelatedMovies(film.id)}>{relatedFilms}</p>
                 <button>+</button>
                 <button>-</button>
               </td>
               <td>
-                <p >Suggested Films</p>
+                <p>Suggested Films</p>
                 <button>+</button>
                 <button>-</button>
               </td>
