@@ -52,14 +52,28 @@ function App() {
           onClick={submitSearch}>Submit
         </button>
       </div>
-      <div>
+      <table>
         {filmsList.map(film =>
-          <div className='rows' key={film.id}>
-            <img className='row' onClick={() => getRelatedMovies(film.id)} src={rootPosterUrl + film.poster_path}></img>
-            <p className='row'>{film.title}</p>
-          </div>
+          <tr className='rows' key={film.id}>
+            <td>
+              <img onClick={() => getRelatedMovies(film.id)} src={rootPosterUrl + film.poster_path}></img>
+            </td>
+            <td>
+              <p >{film.title}</p>
+            </td>
+            <td>
+              <p >Required Films</p>
+              <button>+</button>
+              <button>-</button>
+            </td>
+            <td>
+              <p >Suggested Films</p>
+              <button>+</button>
+              <button>-</button>
+            </td>
+          </tr>
         )}
-      </div>
+      </table>
       <div>
         Powered by
       </div>

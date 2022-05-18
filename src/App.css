@@ -15,18 +15,14 @@
   background-color: lightgreen;
 }
 
-.rows:nth-child(even) {
+.rows:nth-child(odd) {
   background-color: lightblue;
   padding: 10px;
   border: solid;
 }
 
-.rows:nth-child(odd) {
+.rows:nth-child(even) {
   background-color: white;
   padding: 10px;
   border: solid;
-}
-
-.row {
-  display: inline-block;
 }
