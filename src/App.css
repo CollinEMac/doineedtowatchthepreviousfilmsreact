@@ -7,3 +7,26 @@
   pointer-events: none;
 }
 
+.search {
+  padding: 10px;
+}
+
+.search-button {
+  background-color: lightgreen;
+}
+
+.rows:nth-child(even) {
+  background-color: lightblue;
+  padding: 10px;
+  border: solid;
+}
+
+.rows:nth-child(odd) {
+  background-color: white;
+  padding: 10px;
+  border: solid;
+}
+
+.row {
+  display: inline-block;
+}

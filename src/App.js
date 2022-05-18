@@ -43,20 +43,20 @@ function App() {
   return (
     <div className="App">
       <div>
-        Search
-      </div>
-      <div>
         <input
+          className='search'
           onChange={handleInputChanges}
         ></input>
-        <button onClick={submitSearch}>Submit</button>
+        <button
+          className='search search-button'
+          onClick={submitSearch}>Submit
+        </button>
       </div>
       <div>
         {filmsList.map(film =>
-          <div key={film.id}>
-            <img onClick={() => getRelatedMovies(film.id)} src={rootPosterUrl + film.poster_path}></img>
-            <p>{film.title}</p>
-            <p>{film.overview}</p>
+          <div className='rows' key={film.id}>
+            <img className='row' onClick={() => getRelatedMovies(film.id)} src={rootPosterUrl + film.poster_path}></img>
+            <p className='row'>{film.title}</p>
           </div>
         )}
       </div>
