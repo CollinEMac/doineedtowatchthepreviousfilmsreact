@@ -53,26 +53,28 @@ function App() {
         </button>
       </div>
       <table>
-        {filmsList.map(film =>
-          <tr className='rows' key={film.id}>
-            <td>
-              <img onClick={() => getRelatedMovies(film.id)} src={rootPosterUrl + film.poster_path}></img>
-            </td>
-            <td>
-              <p >{film.title}</p>
-            </td>
-            <td>
-              <p >Required Films</p>
-              <button>+</button>
-              <button>-</button>
-            </td>
-            <td>
-              <p >Suggested Films</p>
-              <button>+</button>
-              <button>-</button>
-            </td>
-          </tr>
-        )}
+        <tbody>
+          {filmsList.map(film =>
+            <tr className='rows' key={film.id}>
+              <td>
+                <img onClick={() => getRelatedMovies(film.id)} src={rootPosterUrl + film.poster_path}></img>
+              </td>
+              <td>
+                <p >{film.title}</p>
+              </td>
+              <td>
+                <p >Required Films</p>
+                <button>+</button>
+                <button>-</button>
+              </td>
+              <td>
+                <p >Suggested Films</p>
+                <button>+</button>
+                <button>-</button>
+              </td>
+            </tr>
+          )}
+        </tbody>
       </table>
       <div>
         Powered by
