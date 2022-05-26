@@ -6,10 +6,11 @@ const axios = require('axios');
 function App() {
   let [searchText, setSearchText] = useState("");
   let [filmsList, setFilmsList] = useState([]);
-  let [relatedFilms, setRelatedFilms] = useState("");
 
   const apiUrl = 'http://127.0.0.1:8081'
   const rootPosterUrl = 'https://www.themoviedb.org/t/p/w94_and_h141_bestv2/';
+
+  const [isLoading, setLoading] = useState(false);
 
   let handleInputChanges = (event) => {
     setSearchText(event.currentTarget.value);
@@ -17,32 +18,42 @@ function App() {
 
   function submitSearch () {
     const url = 'https://api.themoviedb.org/3/search/movie?api_key=***REMOVED***&query=' + searchText;
+    setLoading(true);
     
     axios
       .get(url)
       .then(res => {
-        setFilmsList(res.data.results);
+        // let resultsWithRelationships = res.data.results.forEach(getRelatedMovies);
+        let resultsWithRelationships = res.data.results;
+        let counter = 0;
+
+        // this is a very annoying way in which I get the relationships for each result
+        Promise.all(resultsWithRelationships.forEach(item => {
+          axios
+          .get(apiUrl + '/getRelatedMovies?id=' + item.id)
+          .then(res => {
+            item.relatedFilms = res.data;
+            counter++;
+            
+            if (counter == resultsWithRelationships.length) {
+              setLoading(false);
+              setFilmsList(resultsWithRelationships);
+            }
+          })
+          .catch(error => {
+            console.log('error');
+            console.error(error);
+          })
+        }));
       })
       .catch(error => {
           console.error(error);
       });
   }
 
-  function getRelatedMovies(id) {
-    axios
-      .get(apiUrl + '/getRelatedMovies?id=' + id)
-      .then(res => {
-        console.log("it's working");
-        console.log(res);
-        setRelatedFilms(res.data);
-        // return res.data;
-      })
-      .catch(error => {
-        console.log('error');
-        console.error(error);
-      })
-  }
-
+  if (isLoading) {
+    return (<div>loading</div>)
+  };
 
   return (
     <div className="App">
@@ -61,13 +72,15 @@ function App() {
           {filmsList.map(film =>
             <tr className='rows' key={film.id}>
               <td>
-                <img onClick={() => getRelatedMovies(film.id)} src={rootPosterUrl + film.poster_path}></img>
+                {
+                  film.poster_path && <img src={rootPosterUrl + film.poster_path}></img>
+                }
               </td>
               <td>
                 <p >{film.title}</p>
               </td>
               <td>
-                <p onClick={() => getRelatedMovies(film.id)}>{relatedFilms}</p>
+                <p>{film.relatedFilms}</p>
                 <button>+</button>
                 <button>-</button>
               </td>
