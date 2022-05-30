@@ -23,7 +23,6 @@ function App() {
     axios
       .get(url)
       .then(res => {
-        // let resultsWithRelationships = res.data.results.forEach(getRelatedMovies);
         let resultsWithRelationships = res.data.results;
         let counter = 0;
 
@@ -32,7 +31,21 @@ function App() {
           axios
           .get(apiUrl + '/getRelatedMovies?id=' + item.id)
           .then(res => {
-            item.relatedFilms = res.data;
+            let response = res.data;
+            if (item.id == response.first_id) {
+              if (response.relationship_id == 0) {
+                item.relatedRequiredFilms = "This film is required for " + response.second_id;
+              } else if (response.relationship_id == 1) {
+                item.relatedSuggestedFilms = "This film is suggested for " + response.second_id;
+              }
+            } else if (item.id == response.second_id) {
+              if (response.relationship_id == 0) {
+                item.relatedRequiredFilms = response.first_id + " is required for this film";
+              } else if (response.relationship_id == 1) {
+                item.relatedSuggestedFilms = response.first_id + " is suggested for This film";
+              }
+            }
+            
             counter++;
             
             if (counter == resultsWithRelationships.length) {
@@ -80,14 +93,18 @@ function App() {
                 <p >{film.title}</p>
               </td>
               <td>
-                <p>{film.relatedFilms}</p>
-                <button>+</button>
-                <button>-</button>
+                {film.relatedRequiredFilms ? <div>
+                  <p>{film.relatedRequiredFilms}</p>
+                  <button>+</button>
+                  <button>-</button>
+                </div> : "N/A"}
               </td>
               <td>
-                <p>Suggested Films</p>
-                <button>+</button>
-                <button>-</button>
+                {film.relatedSuggestedFilms ? <div>
+                  <p>{film.relatedSuggestedFilms}</p>
+                  <button>+</button>
+                  <button>-</button>
+                </div> : "N/A"}
               </td>
             </tr>
           )}
