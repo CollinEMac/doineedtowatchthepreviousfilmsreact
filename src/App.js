@@ -98,6 +98,7 @@ function App() {
                   <button>+</button>
                   <button>-</button>
                 </div> : "N/A"}
+                <button>Add Requirement</button>
               </td>
               <td>
                 {film.relatedSuggestedFilms ? <div>
@@ -105,6 +106,7 @@ function App() {
                   <button>+</button>
                   <button>-</button>
                 </div> : "N/A"}
+                <button>Add Suggestion</button>
               </td>
             </tr>
           )}
