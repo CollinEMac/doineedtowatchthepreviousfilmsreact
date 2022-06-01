@@ -8,11 +8,13 @@ const axios = require('axios');
 function App() {
   let [searchText, setSearchText] = useState("");
   let [filmsList, setFilmsList] = useState([]);
+  let [relatedFilmsList, setRelatedFilmsList] = useState([]);
 
   const apiUrl = 'http://127.0.0.1:8081'
   const rootPosterUrl = 'https://www.themoviedb.org/t/p/w94_and_h141_bestv2/';
 
   const [isLoading, setLoading] = useState(false);
+  const [isModalLoading, setModalLoading] = useState(false);
   const [modalIsOpen, setIsOpen] = useState(false);
 
   let handleInputChanges = (event) => {
@@ -67,6 +69,22 @@ function App() {
       });
   }
 
+  function submitRelatedSearch () {
+    const url = 'https://api.themoviedb.org/3/search/movie?api_key=***REMOVED***&query=' + searchText;
+    setModalLoading(true);
+    
+    axios
+      .get(url)
+      .then(res => {
+        console.log(res.data.results);
+        setRelatedFilmsList(res.data.results);
+        setModalLoading(false);
+      })
+      .catch(error => {
+          console.error(error);
+      });
+  }
+
   if (isLoading) {
     return (<div className='center'>loading</div>)
   };
@@ -87,7 +105,7 @@ function App() {
           onChange={handleInputChanges}
         ></input>
         <button
-          className='search search-button'
+          className='search buttons'
           onClick={submitSearch}>Submit
         </button>
       </div>
@@ -106,20 +124,20 @@ function App() {
               <td>
                 {film.relatedRequiredFilms ? <div>
                   <p>{film.relatedRequiredFilms}</p>
-                  <button>+</button>
-                  <button>-</button>
+                  <button className='buttons'>+</button>
+                  <button className='buttons'>-</button>
                 </div> : "N/A"}
-                <button onClick={openModal}>
+                <button className='buttons' onClick={openModal}>
                    Add Requirement
                 </button>
               </td>
               <td>
                 {film.relatedSuggestedFilms ? <div>
                   <p>{film.relatedSuggestedFilms}</p>
-                  <button>+</button>
-                  <button>-</button>
+                  <button className='buttons'>+</button>
+                  <button className='buttons'>-</button>
                 </div> : "N/A"}
-                <button onClick={openModal}>Add Suggestion</button>
+                <button className='buttons' onClick={openModal}>Add Suggestion</button>
               </td>
             </tr>
           )}
@@ -132,14 +150,32 @@ function App() {
         className='center'
         contentLabel="Example Modal"
       >
+        <div>
+          <input />
+          <button
+            className='search search-button'
+            onClick={submitRelatedSearch}>Submit
+          </button>
+        </div>
         <form>
-          <div>
-            <input />
-            <button
-              className='search search-button'
-              onClick={submitSearch}>Submit
-            </button>
-          </div>
+          {!isModalLoading ? <div>
+            <table>
+              <tbody>
+                {relatedFilmsList.map(film =>
+                  <tr className='rows' key={film.id}>
+                    <td>
+                      {
+                        film.poster_path && <img src={rootPosterUrl + film.poster_path}></img>
+                      }
+                    </td>
+                    <td>
+                      <p >{film.title}</p>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div> : <div>loading</div>}
           <div>
             <button>Add relationship</button>
             <button onClick={closeModal}>close</button>
