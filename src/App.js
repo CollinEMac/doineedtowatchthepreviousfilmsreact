@@ -2,6 +2,7 @@ import tmdbLogo from './images/tmdbLogo.svg'
 import './App.css';
 import { useState } from "react";
 import Modal from 'react-modal';
+const REACT_APP_SEARCHURL = process.env.REACT_APP_SEARCHURL;
 
 const axios = require('axios');
 
@@ -22,11 +23,10 @@ function App() {
   };
 
   function submitSearch () {
-    const url = 'https://api.themoviedb.org/3/search/movie?api_key=***REMOVED***&query=' + searchText;
     setLoading(true);
-    
+
     axios
-      .get(url)
+      .get(REACT_APP_SEARCHURL + searchText)
       .then(res => {
         let resultsWithRelationships = res.data.results;
         let counter = 0;
@@ -70,11 +70,10 @@ function App() {
   }
 
   function submitRelatedSearch () {
-    const url = 'https://api.themoviedb.org/3/search/movie?api_key=***REMOVED***&query=' + searchText;
     setModalLoading(true);
     
     axios
-      .get(url)
+      .get(REACT_APP_SEARCHURL + searchText)
       .then(res => {
         console.log(res.data.results);
         setRelatedFilmsList(res.data.results);
