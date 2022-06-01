@@ -1,6 +1,8 @@
 import tmdbLogo from './images/tmdbLogo.svg'
 import './App.css';
 import { useState } from "react";
+import Modal from 'react-modal';
+
 const axios = require('axios');
 
 function App() {
@@ -11,6 +13,7 @@ function App() {
   const rootPosterUrl = 'https://www.themoviedb.org/t/p/w94_and_h141_bestv2/';
 
   const [isLoading, setLoading] = useState(false);
+  const [modalIsOpen, setIsOpen] = useState(false);
 
   let handleInputChanges = (event) => {
     setSearchText(event.currentTarget.value);
@@ -65,8 +68,16 @@ function App() {
   }
 
   if (isLoading) {
-    return (<div>loading</div>)
+    return (<div className='center'>loading</div>)
   };
+
+  function openModal() {
+    setIsOpen(true);
+  }
+
+  function closeModal() {
+    setIsOpen(false);
+  }
 
   return (
     <div className="App">
@@ -98,7 +109,9 @@ function App() {
                   <button>+</button>
                   <button>-</button>
                 </div> : "N/A"}
-                <button>Add Requirement</button>
+                <button onClick={openModal}>
+                   Add Requirement
+                </button>
               </td>
               <td>
                 {film.relatedSuggestedFilms ? <div>
@@ -106,12 +119,34 @@ function App() {
                   <button>+</button>
                   <button>-</button>
                 </div> : "N/A"}
-                <button>Add Suggestion</button>
+                <button onClick={openModal}>Add Suggestion</button>
               </td>
             </tr>
           )}
         </tbody>
       </table>
+
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        className='center'
+        contentLabel="Example Modal"
+      >
+        <form>
+          <div>
+            <input />
+            <button
+              className='search search-button'
+              onClick={submitSearch}>Submit
+            </button>
+          </div>
+          <div>
+            <button>Add relationship</button>
+            <button onClick={closeModal}>close</button>
+          </div>
+        </form>
+      </Modal>
+
       <div>
         Powered by
       </div>
