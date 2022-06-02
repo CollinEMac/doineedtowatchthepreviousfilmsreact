@@ -18,6 +18,10 @@ function App() {
   const [isModalLoading, setModalLoading] = useState(false);
   const [modalIsOpen, setIsOpen] = useState(false);
 
+  // For creating relationships
+  const [selectedFilm, setSelectedFilm] = useState('');
+  const [selectedRelationship, setSelectedRelationship] = useState('');
+
   let handleInputChanges = (event) => {
     setSearchText(event.currentTarget.value);
   };
@@ -73,15 +77,31 @@ function App() {
     setModalLoading(true);
     
     axios
-      .get(REACT_APP_SEARCHURL + searchText)
+      .get(REACT_APP_SEARCHURL + searchText + '&page=1')
       .then(res => {
-        console.log(res.data.results);
-        setRelatedFilmsList(res.data.results);
+        setRelatedFilmsList(res.data.results.slice(0, 5));
         setModalLoading(false);
       })
       .catch(error => {
           console.error(error);
       });
+  }
+
+  function createRelationship () {
+    axios
+      .post(apiUrl +
+        '/addRelatedMovie?first_id=' +
+        selectedFilm +
+        '?second_id=' +
+        'THE CHECKED ID' +
+        '/relationship_id=' +
+        selectedRelationship)
+      .then(res => {
+        console.log(res);
+      })
+      .catch(error => {
+        console.error(error);
+    });
   }
 
   if (isLoading) {
@@ -126,7 +146,9 @@ function App() {
                   <button className='buttons'>+</button>
                   <button className='buttons'>-</button>
                 </div> : "N/A"}
-                <button className='buttons' onClick={openModal}>
+                <button className='buttons' onClick={
+                  () => {openModal(); setSelectedFilm(film.id); setSelectedRelationship(0)}
+                }>
                    Add Requirement
                 </button>
               </td>
@@ -136,7 +158,11 @@ function App() {
                   <button className='buttons'>+</button>
                   <button className='buttons'>-</button>
                 </div> : "N/A"}
-                <button className='buttons' onClick={openModal}>Add Suggestion</button>
+                <button className='buttons' onClick={
+                  () => {openModal(); setSelectedFilm(film.id); setSelectedRelationship(1)}
+                }>
+                  Add Suggestion
+                </button>
               </td>
             </tr>
           )}
@@ -150,7 +176,10 @@ function App() {
         contentLabel="Example Modal"
       >
         <div>
-          <input />
+          <input
+            className='search'
+            onChange={handleInputChanges}
+          />
           <button
             className='search search-button'
             onClick={submitRelatedSearch}>Submit
@@ -162,6 +191,9 @@ function App() {
               <tbody>
                 {relatedFilmsList.map(film =>
                   <tr className='rows' key={film.id}>
+                    <td>
+                      <input type="checkbox"></input>
+                    </td>
                     <td>
                       {
                         film.poster_path && <img src={rootPosterUrl + film.poster_path}></img>
@@ -176,8 +208,12 @@ function App() {
             </table>
           </div> : <div>loading</div>}
           <div>
-            <button>Add relationship</button>
-            <button onClick={closeModal}>close</button>
+            <button className='buttons' onClick={
+              () => {createRelationship(); closeModal();}
+            }>
+              Add relationship
+            </button>
+            <button className='buttons' onClick={closeModal}>close</button>
           </div>
         </form>
       </Modal>
