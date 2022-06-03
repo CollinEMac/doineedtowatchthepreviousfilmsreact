@@ -43,9 +43,9 @@ function App() {
             let response = res.data;
             if (item.id == response.first_id) {
               if (response.relationship_id == 0) {
-                item.relatedRequiredFilms = "This film is required for " + response.second_id;
+                item.relatedRequiredForFilms = "This film is required for " + response.second_id;
               } else if (response.relationship_id == 1) {
-                item.relatedSuggestedFilms = "This film is suggested for " + response.second_id;
+                item.relatedSuggestedForFilms = "This film is suggested for " + response.second_id;
               }
             } else if (item.id == response.second_id) {
               if (response.relationship_id == 0) {
@@ -130,6 +130,27 @@ function App() {
       </div>
       <table>
         <tbody>
+          { filmsList.length ? <tr>
+              <th>
+                Poster
+              </th>
+              <th>
+                Title
+              </th>
+              <th>
+                Required Films
+              </th>
+              <th>
+                Films Required For
+              </th>
+              <th>
+                Suggested Films
+              </th>
+              <th>
+                Films Suggested For
+              </th> 
+             </tr> : <tr></tr>
+          }
           {filmsList.map(film =>
             <tr className='rows' key={film.id}>
               <td>
@@ -153,6 +174,18 @@ function App() {
                 </button>
               </td>
               <td>
+                {film.relatedRequiredForFilms ? <div>
+                  <p>{film.relatedRequiredForFilms}</p>
+                  <button className='buttons'>+</button>
+                  <button className='buttons'>-</button>
+                </div> : "N/A"}
+                <button className='buttons' onClick={
+                  () => {openModal(); setSelectedFilm(film.id); setSelectedRelationship(0)}
+                }>
+                   Add Required For
+                </button>
+              </td>
+              <td>
                 {film.relatedSuggestedFilms ? <div>
                   <p>{film.relatedSuggestedFilms}</p>
                   <button className='buttons'>+</button>
@@ -162,6 +195,18 @@ function App() {
                   () => {openModal(); setSelectedFilm(film.id); setSelectedRelationship(1)}
                 }>
                   Add Suggestion
+                </button>
+              </td>
+              <td>
+                {film.relatedSuggestedForFilms ? <div>
+                  <p>{film.relatedSuggestedForFilms}</p>
+                  <button className='buttons'>+</button>
+                  <button className='buttons'>-</button>
+                </div> : "N/A"}
+                <button className='buttons' onClick={
+                  () => {openModal(); setSelectedFilm(film.id); setSelectedRelationship(1)}
+                }>
+                  Add Suggestion For
                 </button>
               </td>
             </tr>
