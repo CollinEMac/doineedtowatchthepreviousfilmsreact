@@ -21,6 +21,8 @@ function App() {
   // For creating relationships
   const [selectedFilm, setSelectedFilm] = useState('');
   const [selectedRelationship, setSelectedRelationship] = useState('');
+  const [checkedFilm, setCheckedFilm] = useState('');
+  const [relationshipDirection, setRelationshipDirection] = useState('');
 
   let handleInputChanges = (event) => {
     setSearchText(event.currentTarget.value);
@@ -79,7 +81,7 @@ function App() {
     axios
       .get(REACT_APP_SEARCHURL + searchText + '&page=1')
       .then(res => {
-        setRelatedFilmsList(res.data.results.slice(0, 5));
+        setRelatedFilmsList(res.data.results.slice(0, 1));
         setModalLoading(false);
       })
       .catch(error => {
@@ -87,17 +89,36 @@ function App() {
       });
   }
 
-  function createRelationship () {
+  function updateCheckedFilms (e) {
+    const checkbox = e.target;
+
+    if (checkbox.checked) {
+      setCheckedFilm(checkbox.value);
+    } else {
+      setCheckedFilm(null);
+    }
+  }
+
+  function createRelationship (event) {
+    event.preventDefault();
+    let first_id = selectedFilm;
+    let second_id = checkedFilm;
+
+    if (relationshipDirection == 'downstream') {
+      first_id = checkedFilm;
+      second_id = selectedFilm;
+    }
+
     axios
       .post(apiUrl +
         '/addRelatedMovie?first_id=' +
-        selectedFilm +
-        '?second_id=' +
-        'THE CHECKED ID' +
-        '/relationship_id=' +
+        first_id +
+        '&second_id=' +
+        second_id +
+        '&relationship_id=' +
         selectedRelationship)
       .then(res => {
-        console.log(res);
+        closeModal();
       })
       .catch(error => {
         console.error(error);
@@ -168,7 +189,12 @@ function App() {
                   <button className='buttons'>-</button>
                 </div> : "N/A"}
                 <button className='buttons' onClick={
-                  () => {openModal(); setSelectedFilm(film.id); setSelectedRelationship(0)}
+                  () => {
+                    openModal();
+                    setSelectedFilm(film.id);
+                    setSelectedRelationship(0);
+                    setRelationshipDirection('downstream');
+                  }
                 }>
                    Add Requirement
                 </button>
@@ -180,7 +206,12 @@ function App() {
                   <button className='buttons'>-</button>
                 </div> : "N/A"}
                 <button className='buttons' onClick={
-                  () => {openModal(); setSelectedFilm(film.id); setSelectedRelationship(0)}
+                  () => {
+                    openModal();
+                    setSelectedFilm(film.id);
+                    setSelectedRelationship(0);
+                    setRelationshipDirection('upstream');
+                  }
                 }>
                    Add Required For
                 </button>
@@ -192,7 +223,12 @@ function App() {
                   <button className='buttons'>-</button>
                 </div> : "N/A"}
                 <button className='buttons' onClick={
-                  () => {openModal(); setSelectedFilm(film.id); setSelectedRelationship(1)}
+                  () => {
+                    openModal();
+                    setSelectedFilm(film.id);
+                    setSelectedRelationship(1);
+                    setRelationshipDirection('downstream');
+                  }
                 }>
                   Add Suggestion
                 </button>
@@ -204,7 +240,12 @@ function App() {
                   <button className='buttons'>-</button>
                 </div> : "N/A"}
                 <button className='buttons' onClick={
-                  () => {openModal(); setSelectedFilm(film.id); setSelectedRelationship(1)}
+                  () => {
+                    openModal();
+                    setSelectedFilm(film.id);
+                    setSelectedRelationship(1);
+                    setRelationshipDirection('upstream');
+                  }
                 }>
                   Add Suggestion For
                 </button>
@@ -230,14 +271,14 @@ function App() {
             onClick={submitRelatedSearch}>Submit
           </button>
         </div>
-        <form>
+        <form onSubmit={createRelationship}>
           {!isModalLoading ? <div>
             <table>
               <tbody>
                 {relatedFilmsList.map(film =>
                   <tr className='rows' key={film.id}>
                     <td>
-                      <input type="checkbox"></input>
+                      <input onChange={updateCheckedFilms} type="checkbox" value={film.id}></input>
                     </td>
                     <td>
                       {
@@ -253,9 +294,7 @@ function App() {
             </table>
           </div> : <div>loading</div>}
           <div>
-            <button className='buttons' onClick={
-              () => {createRelationship(); closeModal();}
-            }>
+            <button type="submit">
               Add relationship
             </button>
             <button className='buttons' onClick={closeModal}>close</button>
